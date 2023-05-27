@@ -1,0 +1,25 @@
+# Upgrading ensurepip (a bootstrapping pip installer)
+python -m ensurepip --upgrade
+
+# Install flask
+pip install Flask
+
+# Installing bootstrap
+pip install flask-bootstrap
+
+# Install openai
+pip install openai
+
+# Install bs4
+pip install bs4
+
+# Install nltk for title extraction
+pip install nltk
+
+# Install python docx to write docx as txt file
+pip install python-docx
+
+# To add evirnment variables
+pip install python-dotenv
+
+# Make sure you create .env file in the root directory and create the OPEN AI secret key. Save the key as OPENAI_KEY
