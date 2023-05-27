@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form>
+    <div class="row mb-4"></div>
+    <div class="form-group">
+        <h1 class="_3xWts-title">Plagiarism Checker by&nbsp;COT</h1>
+        <div class="_3xzOp-subtitle">Plagiarism checker by COT detects plagiarism in your text.</div>   
+    </div>
+    <div class="row mb-4"></div>
+</form>
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js'></script>
+<form>
+    <script>
+        $(document).ready(function() {
+            var ctx = $("#chart-line");
+            var myLineChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ["Plagiarised Content", "Non-Plagiarised Content"],
+                    datasets: [{
+                        data: {{ data }},
+                        backgroundColor: ["rgba(255, 0, 0, 0.5)", "rgba(100, 255, 0, 0.5)", "rgba(200, 50, 255, 0.5)", "rgba(0, 100, 255, 0.5)"]
+                    }]
+                },
+            });
+        });
+    </script>
+    <div class="page-content page-container" id="page-content">
+        <div class="padding">
+            <div class="row">
+                <div class="container-fluid d-flex justify-content-center">
+                    <div class="col-sm-8 col-md-6">
+                        <div class="card">
+                            <div class="card-header"><b>Plagiarism Results</b></div>
+                            <div class="card-body" style="height: 500px">
+                                <div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;">
+                                    <div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">
+                                        <div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div>
+                                    </div>
+                                    <div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">
+                                        <div style="position:absolute;width:200%;height:200%;left:0; top:0"></div>
+                                    </div>
+                                </div> <canvas id="chart-line" width="299" height="200" class="chartjs-render-monitor" style="display: block; width: 299px; height: 200px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <div class="row mb-4"></div>
+    <a href="#" onclick="prepareAlert(this)" data-content="{{ content }}"><b><i>Click here</i></b></a> to view the matching content.
+    <div class="row mb-4"></div>
+    <a href="{{ url_for('aboutplagiarism') }}">Know more about Plagiarism</a>
+
+    <script>
+    function prepareAlert(link) {
+        var content = link.dataset.content;
+        link.dataset.content = ''; // clear the data attribute to prevent it from being displayed in the alert
+        showAlert(content);
+    }
+    
+    function showAlert(content) {
+        // Use Bootstrap's modal component to display the message
+        var alertModal = '<div class="modal fade" id="alert-modal" tabindex="-1" role="dialog" aria-labelledby="alert-modal-label" aria-hidden="true">' +
+                        '<div class="modal-dialog modal-xl" role="document">' +
+                        '<div class="modal-content">' +
+                        '<div class="modal-header">' +
+                        '<h3 class="modal-title">Plagiarism Results</h3>' +
+                        '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                        '<span aria-hidden="true">&times;</span>' +
+                        '</button>' +
+                        '</div>' +
+                        '<div class="modal-body">' +
+                        content +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>';
+        document.body.insertAdjacentHTML('beforeend', alertModal);
+        $('#alert-modal').modal('show');
+    }
+    </script>
+    </body>
+
+
+</form>
+
+
+
+
+{% endblock %}

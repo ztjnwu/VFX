@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form>
+    <div class="row mb-4"></div>
+    <div class="form-group">
+        <h1 class="_3xWts-title">Plagiarism Checker by&nbsp;COT</h1>
+        <div class="_3xzOp-subtitle">Plagiarism checker by COT detects plagiarism in your text.</div>   
+    </div>
+</form>
+
+<form action="/upload" method="POST" enctype="multipart/form-data">
+    <div class="vjanh-checkBlock">
+        <div class="_1tx-t-checkTextBlock">
+            <div class="row mb-4"></div>
+            <div class="row mb-4"></div>
+            <div class="_2UyJJ-wrapper">
+                <div class="O6L3v-checkText">
+                    <div class="_30TK9-textarea"><div class="row justify-content-center">
+                        &nbsp;&nbsp;
+                        <img src="static/check.png" alt="Check" width="250" height="250">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                 
+                        <textarea class="form-control rounded-lg border-0 shadow-lg" name="textbox" rows="10" cols="10" placeholder="Upload a .txt or .docx file or copy paste the text to the box" maxlength="2000"></textarea>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <img src="static/doc_check.png" alt="DocCheck" width="250" height="250">
+                        &nbsp;&nbsp;
+                    </div>
+                </div>
+                <div class="row mb-4"></div>
+                <input type="file" name="file" accept=".txt,.docx">
+                <input type="submit" value="Submit" class="btn btn-primary">
+                
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+

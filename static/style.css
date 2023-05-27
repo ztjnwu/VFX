@@ -1,0 +1,178 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  form {
+    text-align: center;
+    align-items: center;
+    width: 50;
+  }
+  
+  .form-control {
+    display: block;
+    width: 50%;
+    /* height: calc(1.5em + 0.75rem + 10px); */
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    /* background-color: #fff; */
+    background-clip: padding-box;
+    /* border: 1px solid #ffffff; */
+    /* border-color: #80bdff; */
+    /* border-radius: 0.25rem; */
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(242, 243, 245, 0.25);
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    background: #fff;
+    border: 1px solid #e7e9f5;
+    border-radius: 16px;
+    height: 316px;
+    padding: 8px;
+    position: relative;
+    /* width: 100%; */
+}
+
+.bg-dark {
+  background-color: #000000!important;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  nav li {
+    display: inline-block;
+  }
+  
+  nav a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #000;
+  }
+  
+  nav a:hover {
+    background-color: #eee;
+  }
+
+  .bg-light {
+    background-color: #fff;
+}
+
+.right {
+    margin-top: 5px;
+    right: 100%;
+}
+
+/* The modal background */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+/* The modal box */
+.modal-box {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+/* The blurry effect */
+body.blur {
+  filter: blur(5px);
+}
+
+a {
+  color: rgb(0, 0, 0) !important; /* or any color of your choice */
+  text-decoration: none !important;
+}
+
+a:hover {
+  color: rgb(0, 0, 0) !important; /* or any color of your choice */
+  text-decoration: none !important;
+}
+
+a:focus, a:active {
+  outline: none !important;
+}
+
+nav a {
+  display: block;
+  padding: 10px;
+  text-decoration: none;
+  color: #000 !important;
+}
+
+a {
+  color: #000000 !important;
+  text-decoration: none !important;
+  background-color: transparent !important;
+}
+
+a:hover {
+  color:#000000 !important;
+  text-decoration:underline !important;
+}
+
+a:not([href]):not([class]) {
+  color:inherit !important;
+  text-decoration:none !important;
+}
+
+a:not([href]):not([class]):hover {
+  color:inherit !important;
+  text-decoration:none !important;
+}
+
+.navbar {
+  position: relative;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  padding: 0 !important;
+}
+
+p {
+  padding-right: 50px;
+  padding-left: 50px;
+  font-size: 22px;
+}
+
+h6 {
+  padding-right: 50px;
+  padding-left: 50px;
+  font-size: 12px;
+}
+
+footer {
+  bottom: 0;
+  width: 100%;
+  padding: 10px !important;
+  background-color: #343a40;
+  color: #fff;
+}
+
+.modal-header.text-center h3.modal-title {
+  margin: 0 auto !important;
+}

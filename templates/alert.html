@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form>
+    <div class="row mb-4"></div>
+    <div class="form-group">
+        <h1 class="_3xWts-title">Plagiarism Checker by&nbsp;COT</h1>
+        <div class="_3xzOp-subtitle">Plagiarism checker by COT detects plagiarism in your text.</div>   
+    </div>
+
+    <div class="vjanh-checkBlock">
+        <div class="_1tx-t-checkTextBlock">
+            <div class="row mb-4"></div>
+            <div class="row mb-4"></div>
+            <div class="_2UyJJ-wrapper">
+                <div class="O6L3v-checkText">
+                    <div class="_30TK9-textarea"><div class="row justify-content-center">
+                        &nbsp;&nbsp;
+                        <img src="static/check.png" alt="Check" width="250" height="250">
+                        <!-- <div class="col-md-1"></div> -->
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <textarea class="form-control rounded-lg border-0 shadow-lg" name="textbox" rows="10" cols="10" placeholder="Upload a .txt or .docx file or copy paste the text to the box"></textarea>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <!-- <div class="col-md-1"></div> -->
+                        <img src="static/doc_check.png" alt="DocCheck" width="250" height="250">
+                        &nbsp;&nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4"></div>
+</form>
+
+<form action="/upload" method="POST" enctype="multipart/form-data">
+    <input type="file" name="file">
+    <input type="submit" value="Submit" class="btn btn-primary">
+</form>
+
+<form action="/">
+    <div class="modal" id="modal">
+    <div class="modal-box p-3">
+        <p>{{ message }}</p>
+        <button class="btn btn-primary" id="close-modal">Close</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.min.js"></script>
+    <script>
+        var modal = document.getElementById("modal");
+        var showModalButton = document.getElementById("show-modal");
+        var closeModalButton = document.getElementById("close-modal");
+
+        showModalButton.onclick = function() {
+            modal.style.display = "flex";
+            document.body.classList.add("blur");
+        }
+
+        closeModalButton.onclick = function() {
+            modal.style.display = "none";
+            document.body.classList.remove("blur");
+        }
+    </script>
+    </form>
+</div>
+</form>
+
+{% endblock %}
