@@ -8,16 +8,134 @@ nltk.download('punkt')
 from nltk.tokenize import sent_tokenize
 from docx import Document
 import re
+import requests
 from dotenv import load_dotenv
 
+
+#
+import os
+import json
+import time
+import base64
+import openai
+from PIL import Image, ImageFont, ImageDraw 
+import threading
+#
+
+
+
+#
 app = Flask(__name__)
 
+#
 load_dotenv()
 SECRET_KEY = os.getenv('OPENAI_KEY')
 
 data = ""
 highlighted_content = ""
 flag = 0
+
+
+
+#
+#Initialization stability AI
+api_host = os.getenv('API_HOST', 'https://api.stability.ai')
+url = f"{api_host}/v1/user/account"
+api_key = "sk-JpvcoRP61W8M9wJij8GG9EcvpqD0GOHxmUIMP2tRKT7xeWV9"
+engine_id = "stable-diffusion-v1-5"
+
+#initliazaile openAI AI
+openai.api_key = "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"
+#
+
+#New Feature2
+def get_explanation(text):
+    #build a prompt
+    prompt = f"'{text}'"
+    
+    #call to openAI API
+    response = openai.Completion.create(engine = 'text-davinci-003',
+                                        prompt = prompt,
+                                        max_tokens = 200, 
+                                        temperature = 0.5,
+                                        top_p = 1,
+                                        frequency_penalty = 0,
+                                        presence_penalty = 0
+                                        )
+
+    #
+    explanation = response.choices[0].text.strip()
+    
+    return(explanation)
+
+
+#New Feature2
+def get_image(text, k):
+    response = requests.post(
+        f"{api_host}/v1/generation/{engine_id}/text-to-image",
+        headers = 
+        {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": f"Bearer {api_key}"
+        },
+        
+        json = {
+                "text_prompts": [
+                    {
+                        "text": text
+                    }
+                ],
+                "cfg_scale": 7,
+                "clip_guidance_preset": "FAST_BLUE",
+                "height": 512,
+                "width": 512,
+                "samples": 1,
+                "steps": 30,
+        },
+    
+    )
+
+    if response.status_code != 200:
+        raise Exception("Non-200 response: " + str(response.text))
+    
+    #Return data
+    data = response.json()
+
+    #Parse data
+    path = ""
+    for i, image in enumerate(data["artifacts"]):
+        with open(f"/workspace/VFX/static/v1_txt2img_{k}.png", "wb") as f:
+            f.write(base64.b64decode(image["base64"]))
+            path = f"/workspace/VFX/static/v1_txt2img_{k}.png"
+    
+    #Return
+    return(path)
+
+
+#New Feature3
+def multiple_thread(text):
+    # creating thread
+    t1 = threading.Thread(target = get_image, args=(text, 1))
+    t2 = threading.Thread(target = get_image, args=(text, 2))
+    t3 = threading.Thread(target = get_image, args=(text, 3))
+    t4 = threading.Thread(target = get_image, args=(text, 4))
+ 
+    # starting thread 1
+    t1.start()
+    t2.start()
+    t3.start()
+    t4.start()
+ 
+    # wait until thread 1 is completely executed
+    t1.join()
+    t2.join()
+    t3.join()
+    t4.join()
+ 
+    # both threads completely executed
+    print("Done!")
+
 
 @app.route('/')
 def index():
@@ -26,90 +144,18 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    global flag
-
-    # Flag is used to manage the page refresh, when we refresh page
-    # flag = 0 --> Computation is done
-    # flag = 1 --> Computation is not done and only results is displayed
-    flag = 0
-
-    # Get the file from the form
-    file = request.files['file']
-
     # Get textbox from the form
     text = request.form.get('textbox')
 
-    # Checking if content is available for checking
-    if not file and not text:
-        message = "Error! No file or text provided"
-        return render_template('alert.html', message=message)
+    #Call OpenAI
+    text = get_explanation(text)
+    print(text)
 
-    # If file is uploaded
-    if file:
-        filename = file.filename
-        old_path = os.path.join(app.static_folder, filename)
-        doc_path = os.path.join(app.static_folder, 'file1.docx')
-        text_path = os.path.join(app.static_folder, 'file1.txt')
-
-        if os.path.isfile(doc_path):
-            os.remove(doc_path)
-        if os.path.isfile(text_path):
-            os.remove(text_path)
-
-        # Save the file to the static folder
-        file.save(os.path.join(app.static_folder, filename))
-
-        # Getting the file extension
-        file_extension = os.path.splitext(filename)[1]
-
-        # Renaming file based on the file extension
-        if file_extension == ".docx":
-            new_filename = r'file1.docx'
-
-        elif file_extension == ".txt":
-            new_filename = r'file1.txt'
-
-        else:
-            message = 'File format not accepted. Choose .txt or .docx file'
-            os.remove(old_path)
-            return render_template('alert.html', message=message)
-
-        global new_path
-        new_path = os.path.join(app.static_folder, new_filename)
-        os.rename(old_path, new_path)
-
-        if file_extension == ".docx":
-            new_filename = r'file1.docx'
-
-            # Set the path of the docx file and the output txt file
-            docx_file_path = os.path.join('static', 'file1.docx')
-            txt_file_path = os.path.join('static', 'file1.txt')
-
-            # Open the docx file and extract its text
-            doc = Document(docx_file_path)
-            text = '\n'.join([paragraph.text for paragraph in doc.paragraphs])
-
-            # Save the text to a txt file with UTF-8 encoding
-            with open(txt_file_path, 'w', errors='ignore') as txt_file:
-                txt_file.write(text)
-
-        # Counting the number of characters in file
-        with open("static/file1.txt", "r") as file:
-            content = file.read()
-            num_chars = len(content)
-            if num_chars > 2048:
-                message = 'File size is too big! Upload a file which has 2000 or less characters'
-                return render_template('alert.html', message=message)
-
-        message = 'File upload successful!\n\nWait while we calculate the Plagiarism result.'
-        return render_template('alerts.html', message=message)
-
-    else:
-        # If file1.txt exist open it else create a file1.txt
-        with open('static/file1.txt', 'w') as f:
-            f.write(str(text))
-            message = "Content submittion successful!\n\nWait while we calculate the Plagiarism result."
-            return render_template('alerts.html', message=message)
+    #Communicate with stability AI
+    multiple_thread(text)
+    
+    message = "RESULT"
+    return render_template('index.html', message = message)
 
 
 @app.route("/check")
@@ -182,8 +228,6 @@ def check():
     data = [plagiarised_percent, non_plagiarised_percent]
 
     return (data, highlighted_content)
-
-
 
 
 @app.route("/chart")
