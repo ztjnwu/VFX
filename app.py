@@ -20,6 +20,7 @@ import base64
 import openai
 from PIL import Image, ImageFont, ImageDraw 
 import threading
+import shutil
 #
 
 
@@ -45,7 +46,7 @@ api_key = "sk-JpvcoRP61W8M9wJij8GG9EcvpqD0GOHxmUIMP2tRKT7xeWV9"
 engine_id = "stable-diffusion-v1-5"
 
 #initliazaile openAI AI
-openai.api_key = "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"
+openai.api_key = "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"
 #
 
 #New Feature2
@@ -147,152 +148,15 @@ def upload():
     # Get textbox from the form
     text = request.form.get('textbox')
 
-    #Call OpenAI
-    text = get_explanation(text)
-    print(text)
-
     #Communicate with stability AI
-    multiple_thread(text)
+    #multiple_thread(text)
     
     message = "RESULT"
+
+    #Zip result
+    shutil.make_archive('./output/result', 'zip', root_dir = './static/')
+    print(message)
     return render_template('index.html', message = message)
-
-
-@app.route("/check")
-def check():
-    global data
-    global highlighted_content
-
-    sample_files = [doc for doc in os.listdir(app.static_folder) if doc.endswith('.txt')]
-
-    # Read all files into a list
-    files_content = []
-    for sample_file in sample_files:
-        with open(os.path.join(app.static_folder, sample_file)) as f:
-            files_content.append(f.read())
-
-    # Define the vectorizer using the entire corpus of texts
-    vectorizer = TfidfVectorizer()
-    vectorizer.fit(files_content)
-
-    # Get the content of file1.txt
-    with open(os.path.join(app.static_folder, 'file1.txt')) as file1:
-        file1_content = file1.read()
-
-    plagiarism_result = set()
-
-    # Compare file1.txt with all other files
-    for sample_b in sample_files:
-        # Skip file1.txt itself
-        if sample_b == 'file1.txt':
-            continue
-
-        with open(os.path.join(app.static_folder, sample_b)) as file2:
-            file2_content = file2.read()
-
-        # Transform each individual text using the same vectorizer
-        file1_vec = vectorizer.transform([file1_content])
-        file2_vec = vectorizer.transform([file2_content])
-
-        # Compute similarity score between file1.txt and the current file
-        similarity_score = round(cosine_similarity(file1_vec, file2_vec)[0][0], 4)
-
-        # Store the score and file names in the plagiarism_result set
-        sample_pair = sorted(('file1.txt', sample_b))
-        score = sample_pair[0], sample_pair[1], similarity_score
-        plagiarism_result.add(score)
-
-    # Get the max score and the files with the max score
-    max_score_val = max(plagiarism_result, key=lambda x: x[2])[2]
-    max_files = [(t[0], t[1]) for t in plagiarism_result if t[2] == max_score_val]
-
-    with open(os.path.join(app.static_folder, max_files[0][1])) as max_file:
-        max_file_content = max_file.read()
-
-    # Read max_file_content and highlight matching content in file1.txt
-    with open(os.path.join(app.static_folder, 'file1.txt')) as file1:
-        file1_content = file1.read()
-        highlighted_content = ""
-        for line in file1_content.splitlines():
-            highlighted_line = line
-            for match in set(max_file_content.split()) & set(line.split()):
-                highlighted_line = re.sub(r'\b{}\b'.format(match), '<mark style="background-color:rgba(255, 0, 0, 0.5);">{}</mark>'.format(match), highlighted_line)
-            highlighted_content += highlighted_line + "<br>"
-
-    plagiarised_percent = round(max_score_val, 2) * 100 + 30
-    if plagiarised_percent >= 100:
-        plagiarised_percent = 100
-    elif plagiarised_percent <= 50:
-        plagiarised_percent -= 30
-    non_plagiarised_percent = 100 - plagiarised_percent
-    data = [plagiarised_percent, non_plagiarised_percent]
-
-    return (data, highlighted_content)
-
-
-@app.route("/chart")
-def chart():
-    global data
-    global highlighted_content
-    global flag
-
-    n = 2
-
-    # Checking flag so that the function calls are ot done while page is being refreshed
-    if flag == 1:        
-        return render_template("chart.html", data=data, content=highlighted_content)
-    else: 
-        # Removing the files created by chatGPT
-        for i in range(0, n):
-            file_name = f"chatGPT_file{i+1}.txt"
-            file_path = os.path.join(app.static_folder, file_name)
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-
-        new_path = os.path.join(app.static_folder, 'file1.txt')
-
-        #Read the uploaded file in the fold of static
-        with open(new_path, 'r') as file:
-            text = file.read()
-
-        #invoke openAI api
-        openai.api_key = SECRET_KEY
-        
-        # Tokenize the text into sentences
-        sentences = sent_tokenize(text)
-
-        # The first sentence is usually the title
-        title = sentences[0]
-
-        # Pass the title as the prompt to OpenAI
-        prompt = f"Write an essay on '{title}'."
-        
-        # Call the completion API and get the response
-        for i in range(0, n):
-            if i > 0:
-                prompt = f"Write an essay on '{title}, give a different content for this'."
-
-            var_name = f"var{i+1}"
-
-            response = openai.Completion.create(engine = 'text-davinci-003',
-                                                prompt = prompt,
-                                                max_tokens = 3000,
-                                                temperature = 0.5,
-                                                top_p = 1,
-                                                frequency_penalty = 0,
-                                                presence_penalty = 0
-                                                )
-
-            var_name = response.choices[0].text.strip()
-            file_name = f"chatGPT_file{i+1}.txt"
-            file_path = 'static/' + file_name
-            with open(file_path, 'w') as f:
-                f.write(str(var_name))
-        data, highlighted_content = check()
-
-        flag = 1
-
-        return render_template("chart.html", data=data, content=highlighted_content)
 
 
 @app.route('/about')

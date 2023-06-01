@@ -44,4 +44,19 @@
     </div>
 </form>
 
+
+
+<div>
+    <button onclick="downloadFile()">Download</button>
+    <input type="text" placeholder="result.zip" class="tp">
+</div>
+
+<script>
+    function downloadFile()
+    {
+        var url = "https://localhost:5000/output/result.zip"
+        window.open("url");
+    }
+</script>
+
 {% endblock %}
