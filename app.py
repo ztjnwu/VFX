@@ -21,6 +21,8 @@ import openai
 from PIL import Image, ImageFont, ImageDraw 
 import threading
 import shutil
+from flask import send_file, send_from_directory, make_response
+import tempfile
 #
 
 
@@ -151,12 +153,24 @@ def upload():
     #Communicate with stability AI
     #multiple_thread(text)
     
-    message = "RESULT"
-
     #Zip result
     shutil.make_archive('./output/result', 'zip', root_dir = './static/')
-    print(message)
-    return render_template('index.html', message = message)
+
+    #return
+    return render_template('download.html', message = "Done!")
+
+
+@app.route('/download', methods=['POST'])
+def download():
+    filename = "./output/result.zip"
+    message = "Done!"
+    try: 
+        response = make_response( send_from_directory("./output/", "result.zip", as_attachment = True) )
+        message = response
+    except Exception as e:
+        message = str(e)
+
+    return message
 
 
 @app.route('/about')
